@@ -60,12 +60,8 @@ Dynamically creates sitemap.xml for ASP.Net Core 2.2 Razor pages.
     <b>[Sitemap]</b>
     public class IndexModel : PageModel
     {
-        /// <summary>
-        /// Called when [get].
-        /// </summary>
         public void OnGet()
         {
         }
     }
   </pre>
-
