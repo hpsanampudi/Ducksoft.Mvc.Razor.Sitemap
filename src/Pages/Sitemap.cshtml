@@ -1,0 +1,7 @@
+﻿@page
+@model Ducksoft.Mvc.Razor.Sitemap.Pages.SitemapModel
+@{
+    Layout = null;
+    Response.ContentType = "text/xml";
+}
+@Html.Raw(Model.RawXmlData)
