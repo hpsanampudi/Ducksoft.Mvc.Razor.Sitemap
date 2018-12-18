@@ -49,7 +49,7 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
         /// <value>
         /// The last modified.
         /// </value>
-        public DateTime LastModified { get; set; }
+        public DateTime? LastModified { get; set; }
 
         #region Interface: IEqualityComparer implementation
 
@@ -117,10 +117,7 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
             }
 
             var isEqual = AreaName.IsEqualTo(target.AreaName) &&
-                PageName.IsEqualTo(target.PageName) &&
-                RelativePath.IsEqualTo(target.RelativePath) &&
-                FilePath.IsEqualTo(target.FilePath) &&
-                (LastModified.CompareTo(target.LastModified) == 0);
+                PageName.IsEqualTo(target.PageName);
 
             return isEqual;
         }
@@ -134,10 +131,7 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
         public override int GetHashCode()
         {
             return (AreaName?.GetHashCode() ?? 0) ^
-                (PageName?.GetHashCode() ?? 0) ^
-                (RelativePath?.GetHashCode() ?? 0) ^
-                (FilePath?.GetHashCode() ?? 0) ^
-                LastModified.GetHashCode();
+                (PageName?.GetHashCode() ?? 0);
         }
 
         #endregion

@@ -1,0 +1,45 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+name: $(major).$(minor).$(Build.BuildId)
+variables:
+  buildConfiguration: 'Release'
+  major: 1
+  minor: 0
+  preRelease: ''
+
+steps:
+- powershell: |
+    $v=$env:BUILD_BUILDNUMBER
+    Write-Host "Current Build Number - $v"
+    if('$(preRelease)' -ne '')
+    {
+      $v="$v-$(preRelease)"
+      Write-Host "Modified Build Number - $v"
+      Write-Host "##vso[build.updatebuildnumber]$v"
+    }
+
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core SDK Tool Installer'
+  inputs:
+    version: 2.2.100
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- script: dotnet pack --output $(Build.ArtifactStagingDirectory)/packages
+  displayName: 'dotnet pack $(Build.BuildNumber)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'publish artifacts $(Build.ArtifactStagingDirectory)/packages'  
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/packages' 
+    artifactName: 'drop' 

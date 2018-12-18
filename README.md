@@ -6,15 +6,6 @@ Dynamically creates sitemap.xml for ASP.Net Core 2.2 Razor pages.
 ### To add all pages to sitemap.xml
 1. Add the above mentioned Nuget package to your ASP.Net Core Razor project.
 2. In Starup.cs file, 
-    - Inject the SitemapBuilder object with hosting environment in constructor.
-      <pre>
-      public Startup(IConfiguration configuration, IHostingEnvironment environment)
-      {
-          //Inject the SitemapBuilder object with hosting environment
-          <b>SitemapBuilder.Inject(environment);</b>
-          Configuration = configuration;
-      }      
-      </pre>
     - Under ConfigureServices method, configure SitemapRouteConvention and PageRoute.
       <pre>
         public void ConfigureServices(IServiceCollection services) => 

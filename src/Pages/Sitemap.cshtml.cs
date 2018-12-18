@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ducksoft.Mvc.Razor.Sitemap.Models;
@@ -17,7 +18,7 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Pages
         /// <summary>
         /// The site map nodes
         /// </summary>
-        private static readonly IList<ISitemapPage> siteMapNodes;
+        private static IReadOnlyList<ISitemapPage> siteMapNodes;
 
         /// <summary>
         /// Gets the raw XML data.
@@ -61,10 +62,11 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Pages
                         return null;
                     }
 
+                    var lastModified = node.LastModified ?? DateTime.Now;
                     return new tUrl
                     {
                         loc = pageLinkUrl,
-                        lastmod = node.LastModified.ToString("yyyy-MM-ddTHH:mm:sszzz"),
+                        lastmod = lastModified.ToString("yyyy-MM-ddTHH:mm:sszzz"),
                         changefreq = tChangeFreq.always,
                         changefreqSpecified = true,
                         priority = 0.5M,

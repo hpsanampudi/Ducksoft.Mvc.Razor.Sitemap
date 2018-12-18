@@ -1,17 +1,35 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Dynamically creates sitemap.xml for ASP.Net Core Razor pages.</Description>
     <Copyright>© Duck Software Limited 2018</Copyright>
-    <PackageLicenseUrl>https://github.com/hpsanampudi/Ducksoft.Mvc.Razor.Sitemap/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/hpsanampudi/Ducksoft.Mvc.Razor.Sitemap</PackageProjectUrl>
-    <PackageIconUrl>https://www.gravatar.com/avatar/c66699de02a373b3835f8fe83d294328</PackageIconUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://github.com/hpsanampudi/Ducksoft.Mvc.Razor.Sitemap/blob/master/LICENSE/</PackageLicenseUrl>
+    <!--<PackageLicenseExpression>MIT</PackageLicenseExpression>-->
+    <PackageProjectUrl>https://github.com/hpsanampudi/Ducksoft.Mvc.Razor.Sitemap/</PackageProjectUrl>
+    <PackageIconUrl>https://www.gravatar.com/avatar/c66699de02a373b3835f8fe83d294328/</PackageIconUrl>
     <PackageTags>Ducksoft MVC Razor Sitemap</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+ 
+  <PropertyGroup Condition=" '$(BUILD_BUILDID)' == '' ">
+    <!-- Hp: BugFix - Failed to build solution using VS2017 as version tag is generated as 1.0. which is invalid. -->
+    <BUILD_BUILDID>1234</BUILD_BUILDID>
+  </PropertyGroup>
+    
+  <PropertyGroup>
+    <!-- Edit this value to change the current MAJOR.MINOR version -->
+    <VersionPrefix>1.0</VersionPrefix>
+    <!-- Release version numbers are MAJOR.MINOR.<BuildId> -->
+    <VersionPrefix>$(VersionPrefix).$(BUILD_BUILDID)</VersionPrefix>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(preRelease)' != '' ">
+    <!-- preRelease version numbers are MAJOR.MINOR.<BuildId>-<preReleaseTag> -->
+    <VersionSuffix>$(preRelease)</VersionSuffix>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>

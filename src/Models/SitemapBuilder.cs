@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Ducksoft.Mvc.Razor.Sitemap.Utilities;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -33,52 +32,38 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
         public static SitemapBuilder Instance => instance.Value;
 
         /// <summary>
-        /// The environment
-        /// </summary>
-        private static IHostingEnvironment _environment = null;
-
-        /// <summary>
-        /// The host environment
-        /// </summary>
-        public IHostingEnvironment HostEnvironment = new Lazy<IHostingEnvironment>(
-            () => _environment).Value;
-
-        /// <summary>
-        /// The content root path
-        /// </summary>
-        private readonly string contentRootPath;
-
-        /// <summary>
         /// The source page routes list
         /// </summary>
         private List<ISitemapPage> pageRoutesList;
 
         /// <summary>
-        /// The sitemap page attributes list
+        /// Gets the page routes list.
         /// </summary>
-        private readonly IReadOnlyList<ISitemapPage> sitemapAttrList;
+        /// <value>
+        /// The page routes list.
+        /// </value>
+        public IReadOnlyList<ISitemapPage> PageRoutesList => pageRoutesList.AsReadOnly();
 
+        /// <summary>
+        /// The sitemap attribute list
+        /// </summary>
+        private List<ISitemapPage> sitemapAttrList;
+
+        /// <summary>
+        /// Gets the sitemap attribute list.
+        /// </summary>
+        /// <value>
+        /// The sitemap attribute list.
+        /// </value>
+        public IReadOnlyList<ISitemapPage> SitemapAttrList => sitemapAttrList.AsReadOnly();
 
         /// <summary>
         /// Prevents a default instance of the <see cref="SitemapBuilder"/> class from being created.
         /// </summary>
         private SitemapBuilder()
         {
-            contentRootPath = HostEnvironment?.ContentRootPath?.Trim() ?? string.Empty;
             pageRoutesList = new List<ISitemapPage>();
-            sitemapAttrList = GetAllSitemapPageAttributes().AsReadOnly();
-        }
-
-        public static void Inject(IHostingEnvironment environment)
-        {
-            //Hp --> Logic: As we can't construct singleton object with paramaters, 
-            //the below logic is work around implementation to acheive it.
-            if (_environment != null)
-            {
-                return;
-            }
-
-            _environment = environment;
+            sitemapAttrList = GetAllSitemapPageAttributes();
         }
 
         #region Interface: ISitemapBuilder implementation
@@ -88,18 +73,29 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
         /// <value>
         /// The sitemap pages.
         /// </value>
-        public IList<ISitemapPage> SitemapPages
+        public IReadOnlyList<ISitemapPage> SitemapPages
         {
             get
             {
                 if (!sitemapAttrList?.Any() ?? true)
                 {
-                    return pageRoutesList;
+                    return PageRoutesList;
                 }
 
                 var pageList = pageRoutesList
-                    .Join(sitemapAttrList, L => L.RelativePath, R => R.RelativePath, (L, R) => L)
-                    .ToList();
+                    .Join(sitemapAttrList,
+                        L => new { L.AreaName, L.PageName },
+                        R => new { R.AreaName, R.PageName },
+                        (L, R) => new SitemapPage
+                        {
+                            AreaName = L.AreaName,
+                            PageName = L.PageName,
+                            RelativePath = L.RelativePath,
+                            FilePath = R.FilePath,
+                            LastModified = R.LastModified
+                        })
+                        .ToList()
+                        .AsReadOnly();
 
                 return pageList;
             }
@@ -126,15 +122,13 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
             }
 
             var srcRelativePath = routeModel?.RelativePath?.Trim() ?? string.Empty;
-            var srcFilePath = Utility.GetCombinedPath(contentRootPath, srcRelativePath);
-            var srcFileLastModified = Utility.GetLastModifiedDate(srcFilePath) ?? DateTime.Now;
             pageRoutesList.Add(new SitemapPage
             {
                 AreaName = srcAreaName,
                 PageName = srcPageName,
                 RelativePath = srcRelativePath,
-                FilePath = srcFilePath,
-                LastModified = srcFileLastModified
+                FilePath = string.Empty,
+                LastModified = null
             });
         }
 
@@ -146,7 +140,9 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
         /// <returns></returns>
         private List<ISitemapPage> GetAllSitemapPageAttributes()
         {
-            return Assembly.GetEntryAssembly()
+            var assembly = Assembly.GetEntryAssembly();
+            var lastModified = Utility.GetLastModifiedDate(assembly.Location);
+            return assembly
                 .GetTypes()
                 .Where(T => T.IsSubclassOf(typeof(PageModel)))
                 .Select(T =>
@@ -171,15 +167,13 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
                     }
 
                     var filePath = sitemapAttr.FilePath;
-                    var relativePath = filePath.Replace(contentRootPath, string.Empty).ToUrlRelativePath();
-
                     return new SitemapPage
                     {
                         AreaName = areaName,
                         PageName = pageName,
-                        RelativePath = relativePath,
+                        RelativePath = string.Empty,
                         FilePath = filePath,
-                        LastModified = sitemapAttr.LastModified,
+                        LastModified = sitemapAttr.LastModified ?? lastModified,
                     };
                 })
                 .Where(S => S != null)

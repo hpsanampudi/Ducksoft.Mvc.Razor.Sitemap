@@ -50,7 +50,7 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
         /// <value>
         /// The last modified.
         /// </value>
-        public DateTime LastModified { get; set; }
+        public DateTime? LastModified { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SitemapAttribute" /> class.
@@ -76,7 +76,7 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
             }
 
             FilePath = cshtmlFilePath;
-            LastModified = Utility.GetLastModifiedDate(cshtmlFilePath) ?? DateTime.Now;
+            LastModified = Utility.GetLastModifiedDate(cshtmlFilePath);
         }
     }
 }

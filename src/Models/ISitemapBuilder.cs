@@ -14,7 +14,7 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
         /// <value>
         /// The sitemap pages.
         /// </value>
-        IList<ISitemapPage> SitemapPages { get; }
+        IReadOnlyList<ISitemapPage> SitemapPages { get; }
 
         /// <summary>
         /// Adds the specified route model.

@@ -45,6 +45,6 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
         /// <value>
         /// The last modified.
         /// </value>
-        DateTime LastModified { get; }
+        DateTime? LastModified { get; }
     }
 }
