@@ -86,7 +86,7 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Pages
         /// <param name="sitemapPage">The sitemap page.</param>
         /// <returns></returns>
         private string GetPageLinkUrl(HttpRequest request, ISitemapPage sitemapPage) =>
-            GetPageLinkUrl(GetBaseUrl(HttpContext?.Request), sitemapPage);
+            GetPageLinkUrl(GetBaseUrl(request), sitemapPage);
 
         /// <summary>
         /// Gets the page link URL.
