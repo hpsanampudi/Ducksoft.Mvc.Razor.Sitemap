@@ -1,6 +1,6 @@
 # Ducksoft.Mvc.Razor.Sitemap
 Dynamically creates sitemap.xml for ASP.Net Core 2.2 Razor pages.
-- Nuget Package url: https://www.nuget.org/packages/Ducksoft.Mvc.Razor.Sitemap/
+- Nuget Package url: https://www.nuget.org/packages/Ducksoft.NetCore.Razor.Sitemap/
 
 # Basic Configuration
 ### To add all pages to sitemap.xml
