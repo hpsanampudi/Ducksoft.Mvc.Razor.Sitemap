@@ -7,52 +7,51 @@ Dynamically creates sitemap.xml for ASP.Net Core 2.2 Razor pages.
 1. Add the above mentioned Nuget package to your ASP.Net Core Razor project.
 2. In Starup.cs file, 
     - Under ConfigureServices method, configure SitemapRouteConvention and PageRoute.
-      <pre>
+        ```csharp
         public void ConfigureServices(IServiceCollection services) => 
-            <b>services.ConfigureMvcRazorPages</b>(<b>CompatibilityVersion.Version_2_2</b>, "/Index", "Home");
-      </pre>
-      <pre>
-        public static IServiceCollection <b>ConfigureMvcRazorPages</b>(this IServiceCollection services,
-              CompatibilityVersion version, string startPageUrl = "", string startPageArea = "")
-          {
-              services.AddMvc()
-                  .SetCompatibilityVersion(version)
-                  .AddRazorPagesOptions(options =>
-                  {
-                      var isSupportAreas = !string.IsNullOrWhiteSpace(startPageArea);
-                      options.AllowAreas = isSupportAreas;
-                      options.AllowMappingHeadRequestsToGetHandler = true;
-                      if (isSupportAreas)
-                      {
-                          options.Conventions.AddAreaPageRoute(startPageArea, startPageUrl, string.Empty);
-                      }
-                      else if (!string.IsNullOrWhiteSpace(startPageUrl))
-                      {
-                          options.Conventions.AddPageRoute(startPageUrl, string.Empty);
-                      }
-                  })
-                  <b>.AddRazorPagesOptions(options =>
-                  {
-                      options.Conventions.Add(new SitemapRouteConvention());
-                  })
-                  .AddRazorPagesOptions(options =>
-                  {
-                      options.Conventions.AddPageRoute("/Sitemap", "sitemap.xml");
-                  });</b>
+            services.ConfigureMvcRazorPages(CompatibilityVersion.Version_2_2, "/Index", "Home");
 
-              return services;
-          }
-        </pre>
+        public static IServiceCollection ConfigureMvcRazorPages(this IServiceCollection services,
+            CompatibilityVersion version, string startPageUrl = "", string startPageArea = "")
+        {
+            services.AddMvc()
+                .SetCompatibilityVersion(version)
+                .AddRazorPagesOptions(options =>
+                {
+                    var isSupportAreas = !string.IsNullOrWhiteSpace(startPageArea);
+                    options.AllowAreas = isSupportAreas;
+                    options.AllowMappingHeadRequestsToGetHandler = true;
+                    if (isSupportAreas)
+                    {
+                        options.Conventions.AddAreaPageRoute(startPageArea, startPageUrl, string.Empty);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(startPageUrl))
+                    {
+                        options.Conventions.AddPageRoute(startPageUrl, string.Empty);
+                    }
+                })
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.Add(new SitemapRouteConvention());
+                })
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AddPageRoute("/Sitemap", "sitemap.xml");
+                });
+
+            return services;
+        }
+        ```
 
 # Advance Configuration
 ### To add specific pages to sitemap.xml
-1. Add <b>[Sitemap]</b> class attribute to razor page.
-  <pre>
-    <b>[Sitemap]</b>
-    public class IndexModel : PageModel
+1. Add `[Sitemap]` class attribute to razor page.
+  ```csharp
+[Sitemap]
+public class IndexModel : PageModel
+{
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
-  </pre>
+}
+```
