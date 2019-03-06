@@ -111,11 +111,12 @@ namespace Ducksoft.Mvc.Razor.Sitemap.Models
             }
 
             var target = default(ISitemapPage);
-            if (obj.GetType().Implements<ISitemapPage>())
+            if (!obj.GetType().Implements<ISitemapPage>())
             {
-                target = (ISitemapPage)obj;
+                return false;
             }
 
+            target = (ISitemapPage)obj;
             var isEqual = AreaName.IsEqualTo(target.AreaName) &&
                 PageName.IsEqualTo(target.PageName);
 
